@@ -35,4 +35,13 @@ class ClientAdapter(private val clientRepository: ClientRepository) : ClientPort
             .map { c -> Client.fromEntity(c) }
     }
 
+    override fun getByDodamId(dodamId: String): Flux<Client?> {
+        return clientRepository.findAllByDodamId(dodamId)
+            .flatMap { clientEntity ->
+                Mono.justOrEmpty(clientEntity)
+                    .map { Client.fromEntity(it) }
+                    .subscribeOn(Schedulers.boundedElastic())
+            }
+    }
+
 }

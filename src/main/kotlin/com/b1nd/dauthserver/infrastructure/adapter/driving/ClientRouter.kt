@@ -20,4 +20,9 @@ class ClientRouter(val clientUseCase: ClientUseCase) {
     fun getRandomClients(): Mono<ResponseData<List<ClientInfo>>>{
         return clientUseCase.readRandomClient()
     }
+
+    @GetMapping
+    fun getClients(): Mono<ResponseData<List<ClientInfo>>>{
+        return clientUseCase.readMyClient()
+    }
 }

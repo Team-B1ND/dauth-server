@@ -7,12 +7,17 @@ import com.b1nd.dauthserver.domain.client.exception.ExistsClientException
 import com.b1nd.dauthserver.domain.client.model.Client
 import com.b1nd.dauthserver.domain.client.model.ClientFullInfo
 import com.b1nd.dauthserver.domain.client.model.ClientInfo
+import com.b1nd.dauthserver.infrastructure.adapter.driven.security.UserAuthHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 
 @Component
-class ClientUseCase(private val clientPersistencePort: ClientPort) {
+class ClientUseCase(
+    private val clientPersistencePort: ClientPort,
+    private val userAuthHolder: UserAuthHolder) {
 
     @Transactional
     fun appendClient(clientFullInfo: ClientFullInfo, issuerId: String): Mono<ResponseData<Client>> {
@@ -30,9 +35,6 @@ class ClientUseCase(private val clientPersistencePort: ClientPort) {
             )
     }
 
-
-
-
     private fun addClient(issuerId: String, clientInfo: ClientInfo): Mono<Client> {
         return UUIDUtil.generateClientKey()
             .flatMap { clientKey ->
@@ -47,6 +49,7 @@ class ClientUseCase(private val clientPersistencePort: ClientPort) {
             }
     }
 
+    @Transactional
     fun readRandomClient(): Mono<ResponseData<List<ClientInfo>>> {
         return clientPersistencePort.getRandomValuesUpToThree()
             .collectList()
@@ -58,4 +61,18 @@ class ClientUseCase(private val clientPersistencePort: ClientPort) {
             }
     }
 
+    @Transactional
+    fun readMyClient(): Mono<ResponseData<List<ClientInfo>>> {
+        return userAuthHolder.current()
+            .flatMapMany { user ->
+                clientPersistencePort.getByDodamId(user.dodamId)
+                    .filter { it != null }
+                    .map { it!!.toClientInfo() }
+                    .subscribeOn(Schedulers.boundedElastic())
+            }
+            .collectList()
+            .map { clientInfoList ->
+                ResponseData.ok("내 클라이언트 조회 완료", clientInfoList)
+            }
+    }
 }

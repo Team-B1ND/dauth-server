@@ -11,4 +11,5 @@ interface ClientPort {
     fun saveClient(client: Client): Mono<Client>
     fun getRandomValuesUpToThree(): Flux<Client>
     fun getById(clientId: String): Mono<Client>
+    fun getByDodamId(dodamId: String): Flux<Client?>
 }
