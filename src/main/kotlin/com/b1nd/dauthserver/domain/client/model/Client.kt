@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.domain.client.model
 
 import com.b1nd.dauthserver.infrastructure.adapter.driven.db.entity.ClientEntity
+import reactor.core.publisher.Mono
 
 data class Client(
     val clientKey: ClientKey,
@@ -31,5 +32,13 @@ data class Client(
                 clientUrl = clientEntity.clientUrl,
                 redirectUrl = clientEntity.redirectUrl
             )
+    }
+
+    fun updateClientInfo(clientInfo: ClientInfo): Client {
+        return this.copy(
+            clientName = clientInfo.clientName,
+            clientUrl = clientInfo.clientUrl,
+            redirectUrl = clientInfo.redirectUrl
+        )
     }
 }

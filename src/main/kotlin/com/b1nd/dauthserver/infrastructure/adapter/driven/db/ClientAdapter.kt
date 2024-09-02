@@ -44,4 +44,8 @@ class ClientAdapter(private val clientRepository: ClientRepository) : ClientPort
             }
     }
 
+    override fun deleteById(clientId: String): Mono<Void> {
+        return clientRepository.deleteById(clientId)
+    }
+
 }

@@ -12,4 +12,5 @@ interface ClientPort {
     fun getRandomValuesUpToThree(): Flux<Client>
     fun getById(clientId: String): Mono<Client>
     fun getByDodamId(dodamId: String): Flux<Client?>
+    fun deleteById(clientId: String): Mono<Void>
 }

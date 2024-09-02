@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.application.client.usecase
 
 import com.b1nd.dauthserver.application.client.outport.ClientPort
+import com.b1nd.dauthserver.application.common.Response
 import com.b1nd.dauthserver.application.common.ResponseData
 import com.b1nd.dauthserver.application.common.util.UUIDUtil
 import com.b1nd.dauthserver.domain.client.exception.ExistsClientException
@@ -21,7 +22,7 @@ class ClientUseCase(
 ) {
 
     @Transactional
-    fun appendClient(clientFullInfo: ClientFullInfo, issuerId: String): Mono<ResponseData<Client>> {
+    fun appendClient(clientFullInfo: ClientFullInfo): Mono<ResponseData<Client>> {
         return clientPort.getByClientInfo(clientFullInfo.clientInfo)
             .flatMap {
                 // 클라이언트가 이미 존재하는 경우 예외를 반환
@@ -29,7 +30,10 @@ class ClientUseCase(
             }
             .switchIfEmpty(
                 // 클라이언트가 존재하지 않는 경우 클라이언트를 등록하고 응답 생성
-                addClient(issuerId, clientFullInfo.clientInfo)
+                userAuthHolder.current()
+                    .flatMap { user ->
+                        addClient(user.dodamId, clientFullInfo.clientInfo)
+                    }
                     .map { client ->
                         ResponseData.ok("클라이언트 등록 성공", client)
                     }
@@ -64,7 +68,6 @@ class ClientUseCase(
         )
     }
 
-
     @Transactional
     fun readMyClient(): Mono<ResponseData<Flux<ClientInfo>>> {
         return userAuthHolder.current()
@@ -78,10 +81,26 @@ class ClientUseCase(
             }
     }
 
-
     @Transactional
     fun readById(clientId: String): Mono<ResponseData<Client>> {
         return clientPort.getById(clientId)
             .map { client -> ResponseData.ok("id로 클라이언트 조회 완료", client) }
+    }
+
+    @Transactional
+    fun modifyById(clientId: String, clientInfo: ClientInfo): Mono<Response> {
+        return clientPort.getById(clientId)
+            .flatMap { client ->
+                clientPort.saveClient(client.updateClientInfo(clientInfo))
+                    .map {
+                        Response.ok("id로 클라이언트 수정 완료")
+                    }
+            }
+    }
+
+    @Transactional
+    fun removeById(clientId: String): Mono<Response>{
+        return clientPort.deleteById(clientId)
+            .then(Mono.just(Response.ok("id로 클라이언트 삭제 완료")))
     }
 }

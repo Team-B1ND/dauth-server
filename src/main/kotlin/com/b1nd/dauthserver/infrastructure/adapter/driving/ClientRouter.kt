@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.infrastructure.adapter.driving
 
 import com.b1nd.dauthserver.application.client.usecase.ClientUseCase
+import com.b1nd.dauthserver.application.common.Response
 import com.b1nd.dauthserver.application.common.ResponseData
 import com.b1nd.dauthserver.domain.client.model.Client
 import com.b1nd.dauthserver.domain.client.model.ClientFullInfo
@@ -13,8 +14,8 @@ import reactor.core.publisher.Mono
 @RequestMapping("/client")
 class ClientRouter(val clientUseCase: ClientUseCase) {
     @PostMapping("/register")
-    fun registerClient(@RequestBody client: ClientFullInfo, @RequestParam issuerId: String):Mono<ResponseData<Client>>{
-        return clientUseCase.appendClient(client, issuerId)
+    fun registerClient(@RequestBody client: ClientFullInfo): Mono<ResponseData<Client>>{
+        return clientUseCase.appendClient(client)
     }
 
     @GetMapping("/random")
@@ -33,11 +34,15 @@ class ClientRouter(val clientUseCase: ClientUseCase) {
     }
 
     @PutMapping("/{clientId}")
-    fun modifyById(@PathVariable clientId: String, @RequestBody clientInfo: ClientInfo){
+    fun modifyById(
+        @PathVariable clientId: String,
+        @RequestBody clientInfo: ClientInfo
+    ): Mono<Response> {
+        return clientUseCase.modifyById(clientId, clientInfo)
     }
 
     @DeleteMapping("/{clientId}")
-    fun removeById(@PathVariable clientId: String){
-
+    fun removeById(@PathVariable clientId: String): Mono<Response>{
+        return clientUseCase.removeById(clientId)
     }
 }
