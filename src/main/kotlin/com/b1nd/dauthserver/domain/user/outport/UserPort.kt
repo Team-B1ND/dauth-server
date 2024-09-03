@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono
 interface UserPort {
     fun getByDodamIdAndClientId(dodamId: String, clientId: String): Mono<User?>
     fun saveUser(user: User): Mono<User>
+    fun getByDodamId(dodamId: String): Mono<User?>
 }

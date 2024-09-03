@@ -1,7 +1,6 @@
 package com.b1nd.dauthserver.domain.client.model
 
 import com.b1nd.dauthserver.infrastructure.adapter.driven.db.entity.ClientEntity
-import reactor.core.publisher.Mono
 
 data class Client(
     val clientKey: ClientKey,

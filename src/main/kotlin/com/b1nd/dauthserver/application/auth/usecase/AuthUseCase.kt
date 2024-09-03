@@ -20,7 +20,7 @@ import java.util.*
 @Component
 class AuthUseCase(
     private val dodamClient: DodamClient,
-    private val clientPersistencePort: ClientPort,
+    private val clientPort: ClientPort,
     private val userPort: UserPort,
     private val redisService: RedisService
 ) {
@@ -40,7 +40,7 @@ class AuthUseCase(
     }
 
     private fun validateClient(userCredentials: UserCredentials): Mono<Client> {
-        return clientPersistencePort.getById(userCredentials.clientId)
+        return clientPort.getById(userCredentials.clientId)
             .switchIfEmpty(Mono.error(NotFoundClientIdException))
             .flatMap { client ->
                 if (client.redirectUrl != userCredentials.redirectUrl) {

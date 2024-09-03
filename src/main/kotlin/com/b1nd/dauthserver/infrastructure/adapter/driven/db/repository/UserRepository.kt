@@ -8,4 +8,5 @@ import java.util.*
 interface UserRepository : R2dbcRepository<UserEntity, UUID>, CustomUserRepository {
     fun findByUserUnique(userUnique: UUID)
     fun findByDodamIdAndClientId(dodamId: String, clientId: String): Mono<UserEntity?>
+    fun findByDodamId(dodamId: String): Mono<UserEntity?>
 }

@@ -13,7 +13,7 @@ class DodamClient(
 ) {
     fun dodamLogin(dodamLoginRequest: DodamLoginRequest): Mono<DodamLoginResponse> {
         return webClient.post()
-            .uri(dodamProperties.loginEndpoint+"/auth/login+?key="+dodamProperties.key)
+            .uri(dodamProperties.dodamEndpoint+"/auth/login+?key="+dodamProperties.key)
             .bodyValue(dodamLoginRequest)
             .retrieve()
             .onStatus(HttpStatusCode::isError) { response: ClientResponse ->

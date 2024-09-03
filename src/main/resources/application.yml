@@ -16,13 +16,14 @@ spring:
 app:
   dodam:
     key: ${DODAM_KEY}
-    login-endpoint: ${LOGIN_ENDPOINT}
-    token-endpoint: ${TOKEN_ENDPOINT}
+    dodam-endpoint: ${DODAM_ENDPOINT}
   jwt:
     secret: ${JWT_SECRET}
     verify: ${JWT_VERIFY}
     access-expire: ${ACCESS_EXPIRE}
     refresh-expire: ${REFRESH_EXPIRE}
+  token:
+    token-endpoint: ${TOKEN_ENDPOINT}
 
 logging.level:
   org.springframework.boot.autoconfigure: ERROR

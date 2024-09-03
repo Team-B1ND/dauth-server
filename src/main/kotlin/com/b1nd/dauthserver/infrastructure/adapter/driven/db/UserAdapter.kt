@@ -1,5 +1,6 @@
 package com.b1nd.dauthserver.infrastructure.adapter.driven.db
 
+import com.b1nd.dauthserver.domain.user.exception.UserNotFoundException
 import com.b1nd.dauthserver.domain.user.model.User
 import com.b1nd.dauthserver.domain.user.outport.UserPort
 import com.b1nd.dauthserver.infrastructure.adapter.driven.db.repository.UserRepository
@@ -13,9 +14,7 @@ class UserAdapter(
     override fun getByDodamIdAndClientId(dodamId: String, clientId: String): Mono<User?> {
         return userRepository.findByDodamIdAndClientId(dodamId, clientId)
             .flatMap { userEntity ->
-                val user = User.fromEntity(userEntity)
-                if (user != null) Mono.just(user)
-                else Mono.empty()
+                User.fromEntity(userEntity)
             }
     }
 
@@ -23,5 +22,13 @@ class UserAdapter(
     override fun saveUser(user: User): Mono<User> {
         return userRepository.saveUser(user.toEntity())
             .map { user }
+    }
+
+    override fun getByDodamId(dodamId: String): Mono<User?> {
+        return userRepository.findByDodamId(dodamId)
+            .switchIfEmpty(Mono.error(UserNotFoundException()))
+            .flatMap { userEntity ->
+                User.fromEntity(userEntity)
+            }
     }
 }

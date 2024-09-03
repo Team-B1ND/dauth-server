@@ -5,6 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "app.dodam")
 data class DodamProperties(
     val key: String,
-    val loginEndpoint: String,
-    val tokenEndpoint: String
+    val dodamEndpoint: String
 )
