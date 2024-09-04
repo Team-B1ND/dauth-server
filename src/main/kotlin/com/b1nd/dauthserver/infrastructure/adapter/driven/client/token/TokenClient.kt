@@ -19,5 +19,5 @@ class TokenClient(
             .onStatus(HttpStatusCode::isError) { response: ClientResponse ->
                 throw TokenException(response.statusCode().value())
             }
-            .bodyToMono(TokenResponse::class.java);
+            .bodyToMono(TokenResponse::class.java)
 }

@@ -1,8 +1,11 @@
 package com.b1nd.dauthserver.infrastructure.adapter.driven.db
 
+import com.b1nd.dauthserver.application.client.exception.NotFoundClientIdException
+import com.b1nd.dauthserver.application.client.exception.UnauthorizedRedirectUrlException
 import com.b1nd.dauthserver.application.client.outport.ClientPort
 import com.b1nd.dauthserver.domain.client.model.Client
 import com.b1nd.dauthserver.domain.client.model.ClientInfo
+import com.b1nd.dauthserver.domain.user.model.UserCredentials
 import com.b1nd.dauthserver.infrastructure.adapter.driven.db.entity.ClientEntity
 import com.b1nd.dauthserver.infrastructure.adapter.driven.db.repository.ClientRepository
 import org.springframework.stereotype.Component
@@ -48,4 +51,15 @@ class ClientAdapter(private val clientRepository: ClientRepository) : ClientPort
         return clientRepository.deleteById(clientId)
     }
 
+    override fun validateClient(userCredentials: UserCredentials): Mono<Client> {
+        return getById(userCredentials.clientId)
+            .switchIfEmpty(Mono.error(NotFoundClientIdException))
+            .flatMap { client ->
+                if (client.redirectUrl != userCredentials.redirectUrl) {
+                    Mono.error(UnauthorizedRedirectUrlException)
+                } else {
+                    Mono.just(client)
+                }
+            }
+    }
 }

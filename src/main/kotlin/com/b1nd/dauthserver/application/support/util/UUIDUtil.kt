@@ -1,4 +1,4 @@
-    package com.b1nd.dauthserver.application.common.util
+    package com.b1nd.dauthserver.application.support.util
 
     import com.b1nd.dauthserver.domain.client.model.ClientKey
     import reactor.core.publisher.Mono

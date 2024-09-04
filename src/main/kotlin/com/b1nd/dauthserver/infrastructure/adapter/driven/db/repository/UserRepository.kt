@@ -9,4 +9,5 @@ interface UserRepository : R2dbcRepository<UserEntity, UUID>, CustomUserReposito
     fun findByUserUnique(userUnique: UUID)
     fun findByDodamIdAndClientId(dodamId: String, clientId: String): Mono<UserEntity?>
     fun findByDodamId(dodamId: String): Mono<UserEntity?>
+    fun findByUserUniqueAndClientId(userUnique: UUID, clientId: String): Mono<UserEntity>
 }

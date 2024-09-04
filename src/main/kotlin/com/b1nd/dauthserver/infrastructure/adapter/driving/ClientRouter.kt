@@ -1,8 +1,8 @@
 package com.b1nd.dauthserver.infrastructure.adapter.driving
 
 import com.b1nd.dauthserver.application.client.usecase.ClientUseCase
-import com.b1nd.dauthserver.application.common.Response
-import com.b1nd.dauthserver.application.common.ResponseData
+import com.b1nd.dauthserver.application.support.response.Response
+import com.b1nd.dauthserver.application.support.response.ResponseData
 import com.b1nd.dauthserver.domain.client.model.Client
 import com.b1nd.dauthserver.domain.client.model.ClientFullInfo
 import com.b1nd.dauthserver.domain.client.model.ClientInfo
@@ -28,7 +28,7 @@ class ClientRouter(val clientUseCase: ClientUseCase) {
         return clientUseCase.readMyClient()
     }
 
-    @PutMapping("/{clientId}")
+    @GetMapping("/{clientId}")
     fun getClientById(@PathVariable clientId: String): Mono<ResponseData<Client>> {
         return clientUseCase.readById(clientId)
     }

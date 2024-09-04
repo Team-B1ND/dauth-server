@@ -20,6 +20,7 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     verify: ${JWT_VERIFY}
+    issuer: ${JWT_ISSUER}
     access-expire: ${ACCESS_EXPIRE}
     refresh-expire: ${REFRESH_EXPIRE}
   token:

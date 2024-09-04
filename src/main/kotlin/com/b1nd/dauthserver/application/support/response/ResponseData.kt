@@ -1,4 +1,4 @@
-package com.b1nd.dauthserver.application.common
+package com.b1nd.dauthserver.application.support.response
 
 import org.springframework.http.HttpStatus
 

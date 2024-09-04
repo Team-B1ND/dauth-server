@@ -1,9 +1,9 @@
 package com.b1nd.dauthserver.application.client.usecase
 
 import com.b1nd.dauthserver.application.client.outport.ClientPort
-import com.b1nd.dauthserver.application.common.Response
-import com.b1nd.dauthserver.application.common.ResponseData
-import com.b1nd.dauthserver.application.common.util.UUIDUtil
+import com.b1nd.dauthserver.application.support.response.Response
+import com.b1nd.dauthserver.application.support.response.ResponseData
+import com.b1nd.dauthserver.application.support.util.UUIDUtil
 import com.b1nd.dauthserver.domain.client.exception.ExistsClientException
 import com.b1nd.dauthserver.domain.client.model.Client
 import com.b1nd.dauthserver.domain.client.model.ClientFullInfo

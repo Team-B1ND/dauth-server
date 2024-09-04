@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
@@ -7,6 +9,8 @@ plugins {
 
 group = "com.b1nd"
 version = "0.0.1-SNAPSHOT"
+
+val jjwtVersion = "0.12.6"
 
 java {
     toolchain {
@@ -33,14 +37,18 @@ dependencies {
     implementation ("io.netty:netty-resolver-dns-native-macos:4.1.70.Final")
 
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
+
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     implementation("jakarta.servlet:jakarta.servlet-api:5.0.0")
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xjsr305=strict"
+        jvmTarget = "17"
     }
 }
 
