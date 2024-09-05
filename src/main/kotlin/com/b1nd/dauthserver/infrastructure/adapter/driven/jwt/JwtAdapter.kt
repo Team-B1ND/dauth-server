@@ -17,26 +17,33 @@ class JwtAdapter(
 
     private val secureRandom = SecureRandom.getInstance("NativePRNGNonBlocking")
     private final val secret = jwtProperties.secret
+    private final val accessExpire = jwtProperties.accessExpire
+    private final val refreshExpire = jwtProperties.refreshExpire
 
-    override fun issue(payload: JwtClaim) =
-        TokenInfo(
-            accessToken = provide(payload, "accessToken"),
-            refreshToken = provide(payload, "refreshToken"),
-            accessExpire = jwtProperties.accessExpire,
-            refreshExpire = jwtProperties.refreshExpire,
-            tokenType = "bearer"
-        )
 
     override fun getVerifyKey() = jwtProperties.verify
 
-    private fun provide(claim: JwtClaim, subject: String) =
+    override fun getIssuer() = jwtProperties.issuer
+
+    override fun getAccessExpire() = accessExpire
+
+    override fun issue(payload: JwtClaim) =
+        TokenInfo(
+            accessToken = provide(payload, "accessToken", accessExpire),
+            refreshToken = provide(payload, "refreshToken", refreshExpire),
+            accessExpire = accessExpire,
+            refreshExpire = refreshExpire,
+            tokenType = "bearer"
+        )
+
+    override fun provide(claim: JwtClaim, subject: String, expire: Int): String =
         Jwts.builder()
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8)), Jwts.SIG.HS256)
             .subject(subject)
             .claims(claim.toMap())
             .issuer(jwtProperties.issuer)
             .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + jwtProperties.accessExpire))
+            .expiration(Date(System.currentTimeMillis() + expire))
             .apply { random(secureRandom) }
             .compact()
 
@@ -59,5 +66,13 @@ class JwtAdapter(
                 else -> throw InvalidTokenException
             }
         }
+    }
+
+    override fun matchIssuer(iss: String): Boolean {
+        return iss == jwtProperties.issuer
+    }
+
+    override fun matchSecret(secret: String): Boolean {
+        return secret == jwtProperties.secret
     }
 }

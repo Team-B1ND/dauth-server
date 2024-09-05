@@ -6,6 +6,11 @@ import com.b1nd.dauthserver.infrastructure.adapter.driven.jwt.JwtPayload
 
 interface JwtPort {
     fun issue(payload: JwtClaim): TokenInfo
+    fun provide(claim: JwtClaim, subject: String, expire: Int): String
     fun getVerifyKey(): String
+    fun getIssuer(): String
     fun parse(token: String): JwtPayload
+    fun matchIssuer(iss: String): Boolean
+    fun matchSecret(secret: String): Boolean
+    fun getAccessExpire(): Int
 }

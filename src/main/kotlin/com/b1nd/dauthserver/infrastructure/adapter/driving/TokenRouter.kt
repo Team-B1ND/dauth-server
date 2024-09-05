@@ -1,9 +1,9 @@
 package com.b1nd.dauthserver.infrastructure.adapter.driving
 
 import com.b1nd.dauthserver.application.auth.usecase.TokenUseCase
-import com.b1nd.dauthserver.domain.auth.model.AccessToken
+import com.b1nd.dauthserver.application.auth.usecase.data.RefreshTokenRequest
+import com.b1nd.dauthserver.domain.auth.model.Token
 import com.b1nd.dauthserver.domain.client.model.ClientCredentials
-import com.b1nd.dauthserver.domain.client.model.ClientKey
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -20,7 +20,13 @@ class TokenRouter(
         tokenUseCase.generateToken(clientCredentials)
 
     @PostMapping("/verify/{secret}")
-    fun verify(@PathVariable secret: String, @RequestBody token: AccessToken) =
+    fun verify(@PathVariable secret: String, @RequestBody token: Token) =
         tokenUseCase.verify(secret, token.token)
 
+    @PostMapping("/refresh")
+    fun refresh(@RequestBody refreshTokenRequest: RefreshTokenRequest) =
+        tokenUseCase.refreshToken(
+            refreshToken = refreshTokenRequest.refreshToken,
+            clientId = refreshTokenRequest.clientId
+        )
 }

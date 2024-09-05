@@ -11,6 +11,7 @@ data class Client(
 ){
 
     fun toClientInfo() = ClientInfo(clientName,clientUrl,redirectUrl)
+
     fun toEntity() = ClientEntity(
         clientId = clientKey.clientId,
         clientSecret = clientKey.clientSecret,
@@ -19,6 +20,7 @@ data class Client(
         redirectUrl = redirectUrl,
         dodamId = issuer
     )
+
     companion object {
         fun fromEntity(clientEntity: ClientEntity) =
             Client(
