@@ -1,7 +1,5 @@
 package com.b1nd.dauthserver.domain.common.error
 
-import org.springframework.http.HttpStatus
-
 enum class ErrorCode(
     val message: String,
     val statusCode: Int

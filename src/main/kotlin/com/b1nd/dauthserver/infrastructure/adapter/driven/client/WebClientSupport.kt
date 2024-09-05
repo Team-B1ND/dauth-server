@@ -1,7 +1,7 @@
 //package com.b1nd.dauthserver.infrastructure.adapter.driven.client
 //
 //import com.b1nd.dauthserver.domain.common.error.BasicException
-//import com.b1nd.dauthserver.domain.common.error.exception.InternalServerException
+//import com.b1nd.dauthserver.domain.common.error.InternalServerException
 //import org.slf4j.LoggerFactory
 //import org.springframework.http.HttpHeaders
 //import org.springframework.http.HttpStatusCode

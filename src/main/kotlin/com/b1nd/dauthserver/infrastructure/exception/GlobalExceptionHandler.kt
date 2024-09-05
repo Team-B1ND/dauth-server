@@ -2,7 +2,7 @@ package com.b1nd.dauthserver.infrastructure.exception
 
 import com.b1nd.dauthserver.application.support.response.ErrorResponse
 import com.b1nd.dauthserver.domain.common.error.BasicException
-import com.b1nd.dauthserver.domain.common.error.exception.InternalServerException
+import com.b1nd.dauthserver.domain.common.error.InternalServerException
 import org.springframework.boot.autoconfigure.web.WebProperties
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler
 import org.springframework.boot.web.reactive.error.ErrorAttributes
