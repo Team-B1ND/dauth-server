@@ -18,16 +18,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @Configuration
 @EnableAutoConfiguration(exclude = [RedisAutoConfiguration::class, RedisReactiveAutoConfiguration::class])
 class RedisConfig(
-    private val redisProperties: RedisProperties
+    private val redisProperties: RedisProperties,
 ) {
 
     @Bean
     fun redisConnectionFactory(): ReactiveRedisConnectionFactory {
-        val redisStandaloneConfiguration = RedisStandaloneConfiguration()
-        redisStandaloneConfiguration.hostName = redisProperties.host
-        redisStandaloneConfiguration.port = redisProperties.port
-
-        return LettuceConnectionFactory(redisStandaloneConfiguration)
+        return LettuceConnectionFactory(RedisStandaloneConfiguration().apply {
+            hostName = redisProperties.host
+            port = redisProperties.port
+        })
     }
 
     @Bean
