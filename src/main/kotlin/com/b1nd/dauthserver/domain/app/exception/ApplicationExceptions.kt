@@ -1,0 +1,8 @@
+package com.b1nd.dauthserver.domain.app.exception
+
+import com.b1nd.dauthserver.domain.app.enumeration.ApplicationExceptionStatusCode
+import com.b1nd.dauthserver.domain.common.exception.BasicException
+
+class ApplicationNotFoundException : BasicException(ApplicationExceptionStatusCode.APPLICATION_NOT_FOUND)
+class ApplicationNameAlreadyExistException: BasicException(ApplicationExceptionStatusCode.APPLICATION_NAME_ALEADY_EXIST)
+class ApplicationKeyNotMatchException : BasicException(ApplicationExceptionStatusCode.APPLICATION_KEY_NOT_MATCH)

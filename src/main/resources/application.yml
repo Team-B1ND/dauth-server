@@ -1,0 +1,44 @@
+server:
+  port: 8003
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: dauth-server
+  r2dbc:
+    url: r2dbc:mysql://${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  flyway:
+    url: jdbc:mysql://${DB_URL}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    baseline-on-migrate: true
+    baseline-version: 1
+app:
+  oauth:
+    issuer: ${OAUTH_ISSUER:https://dauth.b1nd.com}
+    login-page: ${OAUTH_LOGIN_PAGE:https://dauth.b1nd.com/login}
+  dodam:
+    endpoint: ${DODAM_ENDPOINT}
+  token:
+    key: ${TOKEN_KEY}
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    web: trace

@@ -1,0 +1,101 @@
+package com.b1nd.dauthserver.presentation.oauth
+
+import com.b1nd.dauthserver.application.oauth.OAuthUseCase
+import com.b1nd.dauthserver.application.oauth.data.StandardUserInfoResponse
+import com.b1nd.dauthserver.application.token.TokenUseCase
+import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+import java.util.Base64
+
+@Tag(name = "OAuth (Standard)", description = "표준 OAuth 2.0 엔드포인트 (Spring Security OAuth2 Client 호환)")
+@RestController
+class StandardTokenController(
+    private val tokenUseCase: TokenUseCase,
+    private val oAuthUseCase: OAuthUseCase
+) {
+    @Operation(
+        summary = "토큰 발급 (표준 형식)",
+        description = """
+            표준 OAuth 2.0 토큰 엔드포인트입니다.
+            Spring Security OAuth2 Client가 자동으로 호출합니다.
+
+            **지원하는 grant_type:**
+            - authorization_code: Authorization Code로 토큰 발급
+            - refresh_token: Refresh Token으로 Access Token 재발급
+
+            **인증 방식:**
+            - client_secret_post: client_id, client_secret을 body에 포함
+            - client_secret_basic: Authorization 헤더에 Basic 인증
+        """
+    )
+    @PostMapping(
+        "/oauth/token",
+        consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun token(
+        @RequestParam("grant_type") grantType: String,
+        @RequestParam(required = false) code: String?,
+        @RequestParam("redirect_uri", required = false) redirectUri: String?,
+        @RequestParam("client_id", required = false) clientId: String?,
+        @RequestParam("client_secret", required = false) clientSecret: String?,
+        @RequestParam("refresh_token", required = false) refreshToken: String?,
+        @RequestHeader("Authorization", required = false) authorization: String?
+    ): StandardTokenResponse {
+        val (resolvedClientId, resolvedClientSecret) = resolveCredentials(
+            clientId, clientSecret, authorization
+        )
+
+        return when (grantType) {
+            "authorization_code" -> {
+                requireNotNull(code) { "code is required for authorization_code grant" }
+                tokenUseCase.issueTokenStandard(code, resolvedClientId, resolvedClientSecret)
+            }
+            "refresh_token" -> {
+                requireNotNull(refreshToken) { "refresh_token is required for refresh_token grant" }
+                tokenUseCase.refreshTokenStandard(refreshToken, resolvedClientId, resolvedClientSecret)
+            }
+            else -> throw IllegalArgumentException("Unsupported grant_type: $grantType")
+        }
+    }
+
+    private fun resolveCredentials(
+        clientId: String?,
+        clientSecret: String?,
+        authorization: String?
+    ): Pair<String, String> {
+        if (!clientId.isNullOrBlank() && !clientSecret.isNullOrBlank()) {
+            return clientId to clientSecret
+        }
+
+        if (!authorization.isNullOrBlank() && authorization.startsWith("Basic ")) {
+            val decoded = String(Base64.getDecoder().decode(authorization.substring(6)))
+            val parts = decoded.split(":", limit = 2)
+            if (parts.size == 2) {
+                return parts[0] to parts[1]
+            }
+        }
+
+        throw IllegalArgumentException("Client credentials are required")
+    }
+
+    @Operation(
+        summary = "사용자 정보 조회 (표준 형식)",
+        description = """
+            표준 OAuth 2.0 userinfo 엔드포인트입니다.
+            Spring Security OAuth2 Client가 자동으로 호출합니다.
+        """,
+        security = [SecurityRequirement(name = "bearerAuth")]
+    )
+    @GetMapping("/userinfo", produces = [MediaType.APPLICATION_JSON_VALUE])
+    suspend fun getUserInfo(): StandardUserInfoResponse =
+        oAuthUseCase.getStandardUserInfo()
+}
