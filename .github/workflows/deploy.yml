@@ -33,4 +33,4 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          sudo docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest --push .
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest --push .
