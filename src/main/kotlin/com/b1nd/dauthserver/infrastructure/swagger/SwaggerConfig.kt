@@ -18,7 +18,7 @@ class SwaggerConfig {
             .info(apiInfo())
             .servers(listOf(
                 Server().url("http://localhost:8003").description("Local Server"),
-                Server().url("https://dauth.b1nd.com").description("Production Server")
+                Server().url("https://dauthapi.b1nd.com").description("Production Server")
             ))
             .components(
                 Components()
@@ -67,6 +67,16 @@ class SwaggerConfig {
                 | write:dormitory | 기숙사 정보 수정 | (준비중) |
                 | read:outsleep | 외박 정보 | (준비중) |
                 | read:club | 동아리 정보 | (준비중) |
+                
+                ### Scopes Enum
+                
+                OPENID("openid"),
+                PHONE("phone"),
+                READ_PROFILE("read:profile"),
+                READ_DORMITORY("read:dormitory"),
+                WRITE_DORMITORY("write:dormitory"),
+                READ_OUTSLEEP("read:outsleep"),
+                READ_CLUB("read:club");
 
                 ## OAuth 2.0 Flow
 
