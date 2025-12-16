@@ -8,6 +8,7 @@ import com.b1nd.dauthserver.application.app.data.response.MyApplicationResponse
 import com.b1nd.dauthserver.application.support.response.Response
 import com.b1nd.dauthserver.application.support.response.ResponseData
 import com.b1nd.dauthserver.domain.app.service.ApplicationService
+import com.b1nd.dauthserver.domain.framework.entity.FrameworkEntity
 import com.b1nd.dauthserver.domain.framework.service.FrameworkService
 import com.b1nd.dauthserver.infrastructure.security.support.UserAuthenticationHolder
 import org.springframework.stereotype.Component
@@ -34,7 +35,7 @@ class ApplicationUseCase(
 
     suspend fun updateInfo(request: UpdateApplicationRequest): Response {
         val user = UserAuthenticationHolder.current()
-        val frameworks = frameworkService.getByNameIn(request.frameworks)
+        val frameworks = request.frameworks?.let { frameworkService.getByNameIn(it) }
         applicationService.updateInfo(user.dodamId, request.clientId, request.name, request.url, request.redirectUrl, request.isPublic, frameworks)
         return Response.ok("어플리케이션 정보 변경 성공")
     }

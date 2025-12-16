@@ -15,5 +15,5 @@ data class UpdateApplicationRequest(
     @Nullable
     val isPublic: Boolean?,
     @Nullable
-    val frameworks: List<String>
+    val frameworks: List<String>?
 )
