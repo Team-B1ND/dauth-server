@@ -17,14 +17,9 @@ class OAuthUseCase(
 ) {
     suspend fun getUserInfo(): ResponseData<UserInfoResponse> {
         val user = UserAuthenticationHolder.current()
-
         val accessToken = tokenProvider.reissueAccessToken(user.refreshToken)
         val memberInfo = dodamClient.dodamMy(accessToken)
-
-        return ResponseData.ok(
-            "사용자 정보 조회 성공",
-            UserInfoResponse.fromMember(memberInfo, user.scopes)
-        )
+        return ResponseData.ok("사용자 정보 조회 성공", UserInfoResponse.of(memberInfo, user.scopes))
     }
 
     suspend fun getStandardUserInfo(): StandardUserInfoResponse {
@@ -33,6 +28,6 @@ class OAuthUseCase(
         val accessToken = tokenProvider.reissueAccessToken(user.refreshToken)
         val memberInfo = dodamClient.dodamMy(accessToken)
 
-        return StandardUserInfoResponse.fromMember(memberInfo, user.scopes)
+        return StandardUserInfoResponse.of(memberInfo, user.scopes)
     }
 }

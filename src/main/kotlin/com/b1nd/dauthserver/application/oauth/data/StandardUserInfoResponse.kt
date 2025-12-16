@@ -10,15 +10,13 @@ data class StandardUserInfoResponse(
     val sub: String,
     val name: String? = null,
     val email: String? = null,
-
     @JsonProperty("profile_image")
     val profileImage: String? = null,
-
     val role: String? = null,
     val phone: String? = null
 ) {
     companion object {
-        fun fromMember(member: MemberResponse, scopes: List<ScopeType>): StandardUserInfoResponse {
+        fun of(member: MemberResponse, scopes: List<ScopeType>): StandardUserInfoResponse {
             val hasOpenId = scopes.contains(ScopeType.OPENID)
             val hasProfile = scopes.contains(ScopeType.READ_PROFILE)
             val hasPhone = scopes.contains(ScopeType.PHONE)

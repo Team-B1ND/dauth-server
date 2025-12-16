@@ -5,6 +5,8 @@ import com.b1nd.dauthserver.infrastructure.security.filter.TokenFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
@@ -30,46 +32,27 @@ class SecurityConfig(
             .exceptionHandling { exceptions ->
                 exceptions.authenticationEntryPoint { exchange, _ ->
                     val response = exchange.response
-                    response.statusCode = org.springframework.http.HttpStatus.UNAUTHORIZED
-                    response.headers.contentType = org.springframework.http.MediaType.APPLICATION_JSON
+                    response.statusCode = HttpStatus.UNAUTHORIZED
+                    response.headers.contentType = MediaType.APPLICATION_JSON
                     val body = """{"status":401,"message":"Unauthorized"}"""
                     val buffer = response.bufferFactory().wrap(body.toByteArray())
                     response.writeWith(reactor.core.publisher.Mono.just(buffer))
                 }
             }
             .authorizeExchange { it
-                // Root
                 .pathMatchers("/").permitAll()
-
-                // Swagger UI
                 .pathMatchers("/swagger-ui.html").permitAll()
                 .pathMatchers("/swagger-ui/**").permitAll()
                 .pathMatchers("/v3/api-docs/**").permitAll()
                 .pathMatchers("/webjars/**").permitAll()
-
-                // Authentication (로그인)
                 .pathMatchers("/auth/**").permitAll()
-
-                // OpenID Connect Discovery
                 .pathMatchers("/.well-known/**").permitAll()
-
-                // OAuth Authorization
                 .pathMatchers(HttpMethod.GET, "/oauth/authorize").permitAll()
-
-                // OAuth Token
                 .pathMatchers(HttpMethod.POST, "/oauth/token").permitAll()
                 .pathMatchers(HttpMethod.POST, "/oauth/token/**").permitAll()
-
-                // OAuth JWKS (for JWT verification)
                 .pathMatchers(HttpMethod.GET, "/oauth/jwks").permitAll()
-
-                // Application (공개 목록 조회)
                 .pathMatchers(HttpMethod.GET, "/app").permitAll()
-
-                // Framework
                 .pathMatchers(HttpMethod.GET, "/framework").permitAll()
-
-                // 그 외 모든 요청은 인증 필요
                 .anyExchange().authenticated()
             }
             .addFilterBefore(filterExceptionHandler, SecurityWebFiltersOrder.AUTHENTICATION)
@@ -77,7 +60,7 @@ class SecurityConfig(
             .build()
 
     @Bean
-    protected fun passwordEncoder() = BCryptPasswordEncoder()
+    fun passwordEncoder() = BCryptPasswordEncoder()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
