@@ -7,9 +7,6 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder
 
 object UserAuthenticationHolder {
     suspend fun current(): UserEntity {
-        return (ReactiveSecurityContextHolder.getContext()
-            .awaitSingle()
-            .authentication
-            .principal as UserPrincipal).user
+        return (ReactiveSecurityContextHolder.getContext().awaitSingle().authentication.principal as UserPrincipal).user
     }
 }

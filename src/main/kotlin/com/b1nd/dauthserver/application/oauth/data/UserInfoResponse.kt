@@ -27,7 +27,7 @@ data class UserInfoResponse(
     val phone: String? = null
 ) {
     companion object {
-        fun fromMember(member: MemberResponse, scopes: List<ScopeType>): UserInfoResponse {
+        fun of(member: MemberResponse, scopes: List<ScopeType>): UserInfoResponse {
             val hasOpenId = scopes.contains(ScopeType.OPENID)
             val hasProfile = scopes.contains(ScopeType.READ_PROFILE)
             val hasPhone = scopes.contains(ScopeType.PHONE)

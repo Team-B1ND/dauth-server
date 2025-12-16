@@ -6,8 +6,6 @@ import com.b1nd.dauthserver.application.token.data.TokenRefreshRequest
 import com.b1nd.dauthserver.application.token.data.TokenRefreshResponse
 import com.b1nd.dauthserver.application.token.data.TokenRequest
 import com.b1nd.dauthserver.application.token.data.TokenResponse
-import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
