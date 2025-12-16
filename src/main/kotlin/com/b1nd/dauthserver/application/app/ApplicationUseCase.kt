@@ -8,7 +8,6 @@ import com.b1nd.dauthserver.application.app.data.response.MyApplicationResponse
 import com.b1nd.dauthserver.application.support.response.Response
 import com.b1nd.dauthserver.application.support.response.ResponseData
 import com.b1nd.dauthserver.domain.app.service.ApplicationService
-import com.b1nd.dauthserver.domain.framework.entity.FrameworkEntity
 import com.b1nd.dauthserver.domain.framework.service.FrameworkService
 import com.b1nd.dauthserver.infrastructure.security.support.UserAuthenticationHolder
 import org.springframework.stereotype.Component
@@ -18,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class ApplicationUseCase(
     private val applicationService: ApplicationService,
-    private val frameworkService: FrameworkService
+    private val frameworkService: FrameworkService,
+    private val holder: UserAuthenticationHolder
 ) {
     suspend fun create(request: CreateApplicationRequest): Response {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         validateOnCreate(request)
         val application = applicationService.save(request.toEntity(user.dodamId))
         applicationService.saveFrameworks(request.toFrameWorks(application.id!!))
@@ -34,14 +34,14 @@ class ApplicationUseCase(
     }
 
     suspend fun updateInfo(request: UpdateApplicationRequest): Response {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         val frameworks = request.frameworks?.let { frameworkService.getByNameIn(it) }
         applicationService.updateInfo(user.dodamId, request.clientId, request.name, request.url, request.redirectUrl, request.isPublic, frameworks)
         return Response.ok("어플리케이션 정보 변경 성공")
     }
 
     suspend fun updateOwner(request: UpdateOwnerRequest): Response {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         applicationService.updateOwner(user.dodamId, request.clientId, request.newOwnerDodamId)
         return Response.ok("소유자 변경 성공")
     }
@@ -50,7 +50,7 @@ class ApplicationUseCase(
         ResponseData.ok("어플리케이션 조회 성공", ApplicationResponse.of(applicationService.getAll()).toList())
 
     suspend fun getMy(): ResponseData<MyApplicationResponse> {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         val applications = applicationService.getByUserId(user.dodamId)
         return ResponseData.ok(
             "내 어플리케이션 조회 성공",

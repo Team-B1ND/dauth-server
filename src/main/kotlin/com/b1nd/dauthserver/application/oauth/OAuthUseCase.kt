@@ -12,16 +12,17 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class OAuthUseCase(
     private val dodamClient: DodamClient,
+    private val holder: UserAuthenticationHolder
 ) {
     suspend fun getUserInfo(): ResponseData<UserInfoResponse> {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         val accessToken = dodamClient.reissueAccessToken(user.refreshToken)
         val memberInfo = dodamClient.dodamMy(accessToken)
         return ResponseData.ok("사용자 정보 조회 성공", UserInfoResponse.of(memberInfo, user.scopes))
     }
 
     suspend fun getStandardUserInfo(): StandardUserInfoResponse {
-        val user = UserAuthenticationHolder.current()
+        val user = holder.current()
         val accessToken = dodamClient.reissueAccessToken(user.refreshToken)
         val memberInfo = dodamClient.dodamMy(accessToken)
         return StandardUserInfoResponse.of(memberInfo, user.scopes)

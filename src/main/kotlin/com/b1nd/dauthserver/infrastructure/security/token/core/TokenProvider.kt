@@ -19,22 +19,20 @@ class TokenProvider(
         private const val REFRESH_TOKEN_EXPIRE = 1000L * 60 * 60 * 24 * 14 // 14일
     }
 
-    fun generateAccessToken(memberId: String, clientId: String, accessLevel: Int): String =
+    fun generateAccessToken(memberId: String, clientId: String): String =
         Jwts.builder()
             .claim("memberId", memberId)
             .claim("clientId", clientId)
-            .claim("accessLevel", accessLevel)
             .claim("type", "access")
             .issuedAt(Date(currentTimeMillis()))
             .expiration(Date(currentTimeMillis() + ACCESS_TOKEN_EXPIRE))
             .signWith(secretKey(properties.key))
             .compact()
 
-    fun generateRefreshToken(memberId: String, clientId: String, accessLevel: Int): String =
+    fun generateRefreshToken(memberId: String, clientId: String): String =
         Jwts.builder()
             .claim("memberId", memberId)
             .claim("clientId", clientId)
-            .claim("accessLevel", accessLevel)
             .claim("type", "refresh")
             .issuedAt(Date(currentTimeMillis()))
             .expiration(Date(currentTimeMillis() + REFRESH_TOKEN_EXPIRE))
@@ -55,10 +53,10 @@ class TokenProvider(
 
     fun validateToken(token: String): TokenClaims {
         val claims = parseToken(token)
+        println(claims["role"])
         return TokenClaims(
             memberId = claims["memberId"] as String,
             clientId = claims["clientId"] as String,
-            accessLevel = (claims["accessLevel"] as Number).toInt(),
             type = claims["type"] as String
         )
     }
@@ -66,7 +64,7 @@ class TokenProvider(
     fun reissueAccessToken(refreshToken: String): String {
         val claims = validateToken(refreshToken)
         require(claims.type == "refresh") { "Invalid token type" }
-        return generateAccessToken(claims.memberId, claims.clientId, claims.accessLevel)
+        return generateAccessToken(claims.memberId, claims.clientId)
     }
 
     private fun parseToken(token: String): Claims =
@@ -83,6 +81,5 @@ class TokenProvider(
 data class TokenClaims(
     val memberId: String,
     val clientId: String,
-    val accessLevel: Int,
     val type: String
 )
