@@ -2,6 +2,7 @@ package com.b1nd.dauthserver.infrastructure.client.dodam
 
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamLoginRequest
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamLoginResponse
+import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamReissueResponse
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.MemberResponse
 import com.b1nd.dauthserver.infrastructure.client.dodam.exception.DodamClientException
 import com.b1nd.dauthserver.infrastructure.client.dodam.properties.DodamProperties
@@ -27,6 +28,16 @@ class DodamClient(
                 throw DodamClientException(response.statusCode().value())
             }
             .awaitBody<BasicApiResponse<DodamLoginResponse>>().data
+
+    suspend fun reissueAccessToken(refreshToken: String): String =
+        webClient.post()
+            .uri(properties.endpoint+"/auth/reissue")
+            .bodyValue(mapOf("refreshToken" to refreshToken))
+            .retrieve()
+            .onStatus(HttpStatusCode::isError) { response: ClientResponse ->
+                throw DodamClientException(response.statusCode().value())
+            }
+            .awaitBody<BasicApiResponse<DodamReissueResponse>>().data.accessToken
 
     suspend fun dodamMy(access: String): MemberResponse =
         webClient.get()
