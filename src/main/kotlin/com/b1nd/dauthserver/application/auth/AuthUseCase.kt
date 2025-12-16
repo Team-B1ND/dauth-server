@@ -65,7 +65,7 @@ class AuthUseCase(
     suspend fun checkQrLogin(request: CheckQrRequest): ResponseData<LoginResponse> {
         val userId = redisService.get(RedisKeyType.QR_LOGIN_CHECKED, request.code)
         if (userId.isBlank()) throw CodeNotAppliedException()
-        val user = userService.getById(userId.toLong()) ?: throw CodeNotAppliedException()
+        val user = userService.getById(userId.toLong())?: throw CodeNotAppliedException()
         redisService.delete(RedisKeyType.QR_LOGIN_CHECKED, request.code)
         return ResponseData.ok("qr 로그인 조회 성공", LoginResponse.of(createCode(user.id!!), request.redirectUrl))
     }
