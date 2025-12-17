@@ -15,7 +15,7 @@ class ApplicationQueryRepository(
     suspend fun findApplicationsByOwnerId(ownerId: String): List<ApplicationWithFrameworks> {
         val sql = """
             SELECT
-                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public,
+                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description,
                 f.id AS fw_id, f.name AS fw_name, f.type AS fw_type, f.color AS fw_color
             FROM applications a
             LEFT JOIN application_frameworks af ON a.id = af.fk_application_id
@@ -35,7 +35,7 @@ class ApplicationQueryRepository(
     suspend fun findAllApplicationsWithFrameworks(): List<ApplicationWithFrameworks> {
         val sql = """
             SELECT
-                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public,
+                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description,
                 f.id AS fw_id, f.name AS fw_name, f.type AS fw_type, f.color AS fw_color
             FROM applications a
             LEFT JOIN application_frameworks af ON a.id = af.fk_application_id
@@ -56,6 +56,7 @@ class ApplicationQueryRepository(
             val app = ApplicationEntity(
                 id = row.get("app_id", java.lang.Long::class.java)?.toLong(),
                 name = row.get("app_name", String::class.java)!!,
+                description = row.get("description", String::class.java) ?: "",
                 ownerId = row.get("owner_id", String::class.java)!!,
                 clientId = row.get("client_id", String::class.java) ?: "",
                 clientSecret = row.get("client_secret", String::class.java) ?: "",

@@ -3,18 +3,23 @@ package com.b1nd.dauthserver.application.app.data.request
 import com.b1nd.dauthserver.domain.app.entity.ApplicationEntity
 import com.b1nd.dauthserver.domain.app.entity.ApplicationFrameworkEntity
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.annotation.Nullable
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import java.util.UUID
 
-@Schema(description = "애플리케이션 등록 요청")
+@Schema(description = "어플리케이션 등록 요청")
 data class CreateApplicationRequest(
     @NotBlank
-    @Schema(description = "애플리케이션 이름", example = "My Awesome App")
+    @Schema(description = "어플리케이션 이름", example = "My Awesome App")
     val name: String,
 
+    @Nullable
+    @Schema(description = "어플리케이션 설명", example = "My Awesome App is a great app for your awesome project!")
+    val description: String? = null,
+
     @NotBlank
-    @Schema(description = "애플리케이션 URL", example = "https://myapp.com")
+    @Schema(description = "어플리케이션 URL", example = "https://myapp.com")
     val url: String,
 
     @NotBlank
@@ -35,6 +40,7 @@ data class CreateApplicationRequest(
             redirectUrl = redirectUrl,
             isPublic = isPublic,
             ownerId = dodamId,
+            description = description,
             clientId = UUID.randomUUID().toString(),
             clientSecret = UUID.randomUUID().toString()
         )

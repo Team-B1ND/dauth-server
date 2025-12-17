@@ -1,12 +1,6 @@
 package com.b1nd.dauthserver.application.auth
 
-import com.b1nd.dauthserver.application.auth.data.AppLoginRequest
-import com.b1nd.dauthserver.application.auth.data.CheckQrRequest
-import com.b1nd.dauthserver.application.auth.data.CreateQrRequest
-import com.b1nd.dauthserver.application.auth.data.IdLoginRequest
-import com.b1nd.dauthserver.application.auth.data.LoginResponse
-import com.b1nd.dauthserver.application.auth.data.QrLoginRequest
-import com.b1nd.dauthserver.application.auth.data.QrLoginResponse
+import com.b1nd.dauthserver.application.auth.data.*
 import com.b1nd.dauthserver.application.support.response.Response
 import com.b1nd.dauthserver.application.support.response.ResponseData
 import com.b1nd.dauthserver.domain.app.entity.ApplicationEntity

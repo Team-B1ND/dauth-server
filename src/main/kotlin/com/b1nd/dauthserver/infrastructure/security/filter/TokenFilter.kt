@@ -19,8 +19,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class TokenFilter(
-    private val tokenProvider: TokenProvider,
-    private val userService: UserService
+    private val tokenProvider: TokenProvider
 ): WebFilter {
     companion object {
         private const val PREFIX = "Bearer "
@@ -47,7 +46,7 @@ class TokenFilter(
     private fun extractToken(request: ServerHttpRequest): String {
         val header = request.headers.getFirst(HttpHeaders.AUTHORIZATION)
         return if (header != null && header.startsWith(PREFIX)) {
-            header.substring(PREFIX.length)
+            header.removePrefix(PREFIX)
         } else {
             Strings.EMPTY
         }
@@ -60,7 +59,6 @@ class TokenFilter(
 
     private suspend fun getUserPrincipal(token: String): UserPrincipal {
         val claims = tokenProvider.validateToken(token)
-        val user: UserEntity = userService.getByDodamIdAndClient(claims.memberId, claims.clientId) ?: throw UserNotFoundException()
-        return UserPrincipal(user)
+        return UserPrincipal(claims.memberId, claims.clientId)
     }
 }

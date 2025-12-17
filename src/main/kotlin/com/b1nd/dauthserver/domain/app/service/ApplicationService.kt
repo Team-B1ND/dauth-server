@@ -35,14 +35,16 @@ class ApplicationService(
         applicationRepository.findById(id)
             ?.let { applicationRepository.delete(it) }
 
-    suspend fun updateInfo(ownerId: String, clientId: String, name: String?, url: String?, redirectUrl: String?, isPublic: Boolean?, frameworks: List<FrameworkEntity>) {
+    suspend fun updateInfo(ownerId: String, clientId: String, name: String?, description: String?, url: String?, redirectUrl: String?, isPublic: Boolean?, frameworks: List<FrameworkEntity>?) {
         val application = applicationRepository.findByOwnerIdAndClientId(ownerId, clientId)
             ?: throw ApplicationNotFoundException()
-        application.updateInfo(name, url, redirectUrl, isPublic)
+        application.updateInfo(name, url, description, redirectUrl, isPublic)
         applicationRepository.save(application)
-        saveFrameworks(frameworks.map {
-            ApplicationFrameworkEntity(applicationId = application.id!!, frameworkId = it.id!!)
-        })
+        frameworks?.let {
+            saveFrameworks(frameworks.map {
+                ApplicationFrameworkEntity(applicationId = application.id!!, frameworkId = it.id!!)
+            })
+        }
     }
 
     suspend fun updateOwner(ownerId: String, clientId: String, dodamId: String) {
