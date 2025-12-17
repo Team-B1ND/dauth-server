@@ -2,6 +2,7 @@ package com.b1nd.dauthserver.application.app.data.request
 
 import com.b1nd.dauthserver.domain.app.entity.ApplicationEntity
 import com.b1nd.dauthserver.domain.app.entity.ApplicationFrameworkEntity
+import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.annotation.Nullable
 import jakarta.validation.constraints.NotBlank
@@ -29,9 +30,12 @@ data class CreateApplicationRequest(
     @Schema(description = "공개 여부", example = "true")
     val isPublic: Boolean,
 
-    @NotEmpty
     @Schema(description = "사용하는 프레임워크 ID 목록", example = "[1, 2, 3]")
-    val frameworks: List<Long>
+    val frameworks: List<Long>,
+
+    @NotEmpty
+    @Schema(description = "사용할 스코프 목록", example = "[\"openid\", \"phone\", \"read:profile\"]")
+    val scopes: List<ScopeType>
 ) {
     fun toEntity(dodamId: String) =
         ApplicationEntity(
@@ -42,7 +46,8 @@ data class CreateApplicationRequest(
             ownerId = dodamId,
             description = description,
             clientId = UUID.randomUUID().toString(),
-            clientSecret = UUID.randomUUID().toString()
+            clientSecret = UUID.randomUUID().toString(),
+            scopes = scopes
         )
 
     fun toFrameWorks(applicationId: Long): List<ApplicationFrameworkEntity> =

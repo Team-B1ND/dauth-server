@@ -6,7 +6,9 @@ create table applications (
     client_secret varchar(255),
     url text,
     redirect_url text,
-    is_public bit
+    is_public bit,
+    scopes text not null,
+    created_at date not null
 );
 
 create table users (
@@ -16,6 +18,7 @@ create table users (
     scopes text not null,
     refresh_token varchar(255),
     role varchar(20),
+    created_at date not null,
     foreign key (fk_client_id) references applications (client_id)
 );
 

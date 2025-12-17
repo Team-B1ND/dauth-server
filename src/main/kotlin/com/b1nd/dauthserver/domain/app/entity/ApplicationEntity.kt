@@ -1,8 +1,10 @@
 package com.b1nd.dauthserver.domain.app.entity
 
+import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.time.LocalDate
 
 @Table("applications")
 data class ApplicationEntity(
@@ -21,7 +23,11 @@ data class ApplicationEntity(
     @Column("redirect_url")
     var redirectUrl: String,
     @Column("is_public")
-    var isPublic: Boolean
+    var isPublic: Boolean,
+    @Column("scopes")
+    var scopes: List<ScopeType>,
+    @Column("created_at")
+    val createdAt: LocalDate = LocalDate.now()
 ) {
     fun updateOwner(ownerId: String) {
         this.ownerId = ownerId

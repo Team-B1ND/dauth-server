@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id
 import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.relational.core.mapping.Column
+import java.time.LocalDate
 
 @Table("users")
 data class UserEntity(
@@ -17,6 +18,8 @@ data class UserEntity(
     @field:Column("refresh_token")
     var refreshToken: String,
     val role: RoleType,
+    @field:Column("created_at")
+    val createdAt: LocalDate = LocalDate.now()
 ) {
     fun updateInfo(refreshToken: String, scopes: List<ScopeType>): UserEntity {
         this.refreshToken = refreshToken
