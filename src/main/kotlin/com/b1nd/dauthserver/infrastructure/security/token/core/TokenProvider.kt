@@ -53,7 +53,6 @@ class TokenProvider(
 
     fun validateToken(token: String): TokenClaims {
         val claims = parseToken(token)
-        println(claims["role"])
         return TokenClaims(
             memberId = claims["memberId"] as String,
             clientId = claims["clientId"] as String,
