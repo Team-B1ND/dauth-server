@@ -11,6 +11,8 @@ data class UpdateApplicationRequest(
     @Nullable
     val url: String?,
     @Nullable
+    val description: String?,
+    @Nullable
     val redirectUrl: String?,
     @Nullable
     val isPublic: Boolean?,
