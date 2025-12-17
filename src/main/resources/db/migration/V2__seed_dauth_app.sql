@@ -1,5 +1,5 @@
 -- DAuth 기본 애플리케이션 등록
-INSERT INTO applications (name, owner_id, client_id, client_secret, url, redirect_url, is_public)
+INSERT INTO applications (name, owner_id, client_id, client_secret, url, redirect_url, is_public, scopes, created_at)
 VALUES (
     'DAuth',
     'legolove08',
@@ -7,5 +7,7 @@ VALUES (
     'f9e8d7c6-b5a4-3210-fedc-ba0987654321',
     'https://dauth.b1nd.com',
     'https://dauth.b1nd.com/callback',
-    1
+    1,
+    'openid phone read:profile',
+    CURDATE()
 );
