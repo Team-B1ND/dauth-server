@@ -4,9 +4,11 @@ import com.b1nd.dauthserver.domain.app.entity.ApplicationEntity
 import com.b1nd.dauthserver.domain.app.entity.data.ApplicationWithFrameworks
 import com.b1nd.dauthserver.domain.framework.entity.FrameworkEntity
 import com.b1nd.dauthserver.domain.framework.enumeration.FrameworkType
+import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class ApplicationQueryRepository(
@@ -15,7 +17,7 @@ class ApplicationQueryRepository(
     suspend fun findApplicationsByOwnerId(ownerId: String): List<ApplicationWithFrameworks> {
         val sql = """
             SELECT
-                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description,
+                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description, a.scopes, a.created_at,
                 f.id AS fw_id, f.name AS fw_name, f.type AS fw_type, f.color AS fw_color
             FROM applications a
             LEFT JOIN application_frameworks af ON a.id = af.fk_application_id
@@ -35,7 +37,7 @@ class ApplicationQueryRepository(
     suspend fun findAllApplicationsWithFrameworks(): List<ApplicationWithFrameworks> {
         val sql = """
             SELECT
-                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description,
+                a.id AS app_id, a.name AS app_name, a.owner_id, a.client_id, a.client_secret, a.url, a.redirect_url, a.is_public, a.description, a.scopes, a.created_at,
                 f.id AS fw_id, f.name AS fw_name, f.type AS fw_type, f.color AS fw_color
             FROM applications a
             LEFT JOIN application_frameworks af ON a.id = af.fk_application_id
@@ -53,6 +55,13 @@ class ApplicationQueryRepository(
 
     private fun mapApplicationWithFrameworks(spec: DatabaseClient.GenericExecuteSpec) =
         spec.map { row, _ ->
+            val scopesString = row.get("scopes", String::class.java) ?: ""
+            val scopes = if (scopesString.isNotBlank()) {
+                scopesString.split(" ").map { ScopeType.fromValue(it) }
+            } else {
+                emptyList()
+            }
+
             val app = ApplicationEntity(
                 id = row.get("app_id", java.lang.Long::class.java)?.toLong(),
                 name = row.get("app_name", String::class.java)!!,
@@ -62,7 +71,9 @@ class ApplicationQueryRepository(
                 clientSecret = row.get("client_secret", String::class.java) ?: "",
                 url = row.get("url", String::class.java) ?: "",
                 redirectUrl = row.get("redirect_url", String::class.java) ?: "",
-                isPublic = (row.get("is_public", java.lang.Boolean::class.java) ?: false) as Boolean
+                isPublic = (row.get("is_public", java.lang.Boolean::class.java) ?: false) as Boolean,
+                scopes = scopes,
+                createdAt = row.get("created_at", LocalDate::class.java) ?: LocalDate.now()
             )
             val frameworkId = row.get("fw_id", java.lang.Long::class.java)
             val framework = frameworkId?.let {
