@@ -53,6 +53,7 @@ class SecurityConfig(
                 .pathMatchers(HttpMethod.GET, "/oauth/jwks").permitAll()
                 .pathMatchers(HttpMethod.GET, "/app").permitAll()
                 .pathMatchers(HttpMethod.GET, "/framework").permitAll()
+                .pathMatchers(HttpMethod.GET, "/stats/**").permitAll()
                 .anyExchange().authenticated()
             }
             .addFilterBefore(filterExceptionHandler, SecurityWebFiltersOrder.AUTHENTICATION)
