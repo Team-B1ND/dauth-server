@@ -33,11 +33,12 @@ data class ApplicationEntity(
         this.ownerId = ownerId
     }
 
-    fun updateInfo(name: String?, url: String?, description: String?, redirectUrl: String?, isPublic: Boolean?) {
+    fun updateInfo(name: String?, url: String?, description: String?, redirectUrl: String?, isPublic: Boolean?, scopes: List<ScopeType>?) {
         if (name != null) this.name = name
         if (description != null) this.description = description
         if (url != null) this.url = url
         if (redirectUrl != null) this.redirectUrl = redirectUrl
         if (isPublic != null) this.isPublic = isPublic
+        if (scopes != null) this.scopes = scopes
     }
 }

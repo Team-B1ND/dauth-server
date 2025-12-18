@@ -10,6 +10,7 @@ import com.b1nd.dauthserver.domain.app.repository.ApplicationFrameworkRepository
 import com.b1nd.dauthserver.domain.app.repository.ApplicationQueryRepository
 import com.b1nd.dauthserver.domain.app.repository.ApplicationRepository
 import com.b1nd.dauthserver.domain.framework.entity.FrameworkEntity
+import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import com.b1nd.dauthserver.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
 
@@ -35,10 +36,10 @@ class ApplicationService(
         applicationRepository.findById(id)
             ?.let { applicationRepository.delete(it) }
 
-    suspend fun updateInfo(ownerId: String, clientId: String, name: String?, description: String?, url: String?, redirectUrl: String?, isPublic: Boolean?, frameworks: List<FrameworkEntity>?) {
+    suspend fun updateInfo(ownerId: String, clientId: String, name: String?, description: String?, url: String?, redirectUrl: String?, isPublic: Boolean?, scopes: List<ScopeType>?, frameworks: List<FrameworkEntity>?) {
         val application = applicationRepository.findByOwnerIdAndClientId(ownerId, clientId)
             ?: throw ApplicationNotFoundException()
-        application.updateInfo(name, url, description, redirectUrl, isPublic)
+        application.updateInfo(name, url, description, redirectUrl, isPublic, scopes)
         applicationRepository.save(application)
         frameworks?.let {
             saveFrameworks(frameworks.map {

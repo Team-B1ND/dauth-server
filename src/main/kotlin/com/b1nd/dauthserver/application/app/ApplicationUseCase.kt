@@ -36,7 +36,7 @@ class ApplicationUseCase(
     suspend fun updateInfo(request: UpdateApplicationRequest): Response {
         val user = holder.current()
         val frameworks = request.frameworks?.let { frameworkService.getByNameIn(it) }
-        applicationService.updateInfo(user.dodamId, request.clientId, request.name, request.description, request.url, request.redirectUrl, request.isPublic, frameworks)
+        applicationService.updateInfo(user.dodamId, request.clientId, request.name, request.description, request.url, request.redirectUrl, request.isPublic, request.scopes, frameworks)
         return Response.ok("어플리케이션 정보 변경 성공")
     }
 
