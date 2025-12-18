@@ -25,6 +25,7 @@ class AuthUseCase(
     private val redisService: RedisService
 ) {
     suspend fun idLogin(request: IdLoginRequest): ResponseData<LoginResponse> {
+        applicationService.validateScopes(request.clientId, request.scopes)
         val loginInfo = dodamClient.dodamLogin(request.id, request.password)
         val newUser = request.toEntity(loginInfo.refreshToken, loginInfo.member.role)
         val user = saveOrUpdateUser(loginInfo.member.id, request.clientId, loginInfo.refreshToken, request.scopes, newUser)
@@ -32,6 +33,7 @@ class AuthUseCase(
     }
 
     suspend fun createQr(request: CreateQrRequest): ResponseData<QrLoginResponse> {
+        applicationService.validateScopes(request.clientId, request.scopes)
         val code = UUID.randomUUID().toString()
         redisService.save(RedisKeyType.QR_SCOPES, code, request.scopes.joinToString(" ") { it.value })
         redisService.save(RedisKeyType.QR_LOGIN_CHECKED, code, "")

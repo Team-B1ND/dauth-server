@@ -6,6 +6,7 @@ import com.b1nd.dauthserver.domain.app.entity.data.ApplicationWithFrameworks
 import com.b1nd.dauthserver.domain.app.exception.ApplicationKeyNotMatchException
 import com.b1nd.dauthserver.domain.app.exception.ApplicationNameAlreadyExistException
 import com.b1nd.dauthserver.domain.app.exception.ApplicationNotFoundException
+import com.b1nd.dauthserver.domain.app.exception.InvalidScopeException
 import com.b1nd.dauthserver.domain.app.repository.ApplicationFrameworkRepository
 import com.b1nd.dauthserver.domain.app.repository.ApplicationQueryRepository
 import com.b1nd.dauthserver.domain.app.repository.ApplicationRepository
@@ -69,4 +70,12 @@ class ApplicationService(
 
     suspend fun getByUserId(ownerId: String): List<ApplicationWithFrameworks> =
         applicationQueryRepository.findApplicationsByOwnerId(ownerId)
+
+    suspend fun validateScopes(clientId: String, requestedScopes: List<ScopeType>) {
+        val application = applicationRepository.findByClientId(clientId)
+            ?: throw ApplicationNotFoundException()
+        if (!application.scopes.containsAll(requestedScopes)) {
+            throw InvalidScopeException()
+        }
+    }
 }
