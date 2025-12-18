@@ -1,5 +1,6 @@
 package com.b1nd.dauthserver.application.app.data.request
 
+import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
 import jakarta.annotation.Nullable
 import jakarta.validation.constraints.NotBlank
 
@@ -16,6 +17,8 @@ data class UpdateApplicationRequest(
     val redirectUrl: String?,
     @Nullable
     val isPublic: Boolean?,
+    @Nullable
+    val scopes: List<ScopeType>?,
     @Nullable
     val frameworks: List<String>?
 )
