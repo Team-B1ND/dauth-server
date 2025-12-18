@@ -6,3 +6,4 @@ import com.b1nd.dauthserver.domain.common.exception.BasicException
 class ApplicationNotFoundException : BasicException(ApplicationExceptionStatusCode.APPLICATION_NOT_FOUND)
 class ApplicationNameAlreadyExistException: BasicException(ApplicationExceptionStatusCode.APPLICATION_NAME_ALEADY_EXIST)
 class ApplicationKeyNotMatchException : BasicException(ApplicationExceptionStatusCode.APPLICATION_KEY_NOT_MATCH)
+class InvalidScopeException : BasicException(ApplicationExceptionStatusCode.INVALID_SCOPE)
