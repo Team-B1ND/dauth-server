@@ -29,6 +29,10 @@ app:
     key: ${TOKEN_KEY}
 
 # Swagger
+swagger:
+  username: ${SWAGGER_USERNAME}
+  password: ${SWAGGER_PASSWORD}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.infrastructure.security.configuration
 
 import com.b1nd.dauthserver.infrastructure.security.filter.FilterExceptionHandler
+import com.b1nd.dauthserver.infrastructure.security.filter.SwaggerBasicAuthFilter
 import com.b1nd.dauthserver.infrastructure.security.filter.TokenFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,7 +21,8 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 @EnableWebFluxSecurity
 class SecurityConfig(
     private val tokenFilter: TokenFilter,
-    private val filterExceptionHandler: FilterExceptionHandler
+    private val filterExceptionHandler: FilterExceptionHandler,
+    private val swaggerBasicAuthFilter: SwaggerBasicAuthFilter
 ) {
     @Bean
     protected fun filterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
@@ -56,6 +58,7 @@ class SecurityConfig(
                 .pathMatchers(HttpMethod.GET, "/stats/**").permitAll()
                 .anyExchange().authenticated()
             }
+            .addFilterAt(swaggerBasicAuthFilter, SecurityWebFiltersOrder.FIRST)
             .addFilterBefore(filterExceptionHandler, SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterAt(tokenFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
