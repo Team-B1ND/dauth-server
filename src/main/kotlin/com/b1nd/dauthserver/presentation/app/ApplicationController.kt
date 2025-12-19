@@ -36,4 +36,8 @@ class ApplicationController(
     @GetMapping
     override suspend fun getAll(): ResponseData<List<ApplicationResponse>> =
         useCase.getAll()
+
+    @GetMapping("/name")
+    override suspend fun getNameByClientId(@RequestParam clientId: String): ResponseData<String> =
+        useCase.getNameByClientId(clientId)
 }

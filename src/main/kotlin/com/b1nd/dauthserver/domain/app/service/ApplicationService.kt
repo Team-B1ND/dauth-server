@@ -65,6 +65,9 @@ class ApplicationService(
     suspend fun getByClientIdAndSecret(clientId: String, clientSecret: String): ApplicationEntity =
         applicationRepository.findByClientIdAndClientSecret(clientId, clientSecret)?: throw ApplicationKeyNotMatchException()
 
+    suspend fun getByClientId(clientId: String): ApplicationEntity =
+        applicationRepository.findByClientId(clientId) ?: throw ApplicationNotFoundException()
+
     suspend fun getAll(): List<ApplicationWithFrameworks> =
         applicationQueryRepository.findAllApplicationsWithFrameworks()
 

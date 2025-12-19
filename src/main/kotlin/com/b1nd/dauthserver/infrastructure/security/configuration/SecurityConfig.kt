@@ -54,6 +54,7 @@ class SecurityConfig(
                 .pathMatchers(HttpMethod.POST, "/oauth/token/**").permitAll()
                 .pathMatchers(HttpMethod.GET, "/oauth/jwks").permitAll()
                 .pathMatchers(HttpMethod.GET, "/app").permitAll()
+                .pathMatchers(HttpMethod.GET, "/app/name").permitAll()
                 .pathMatchers(HttpMethod.GET, "/framework").permitAll()
                 .pathMatchers(HttpMethod.GET, "/stats/**").permitAll()
                 .anyExchange().authenticated()
