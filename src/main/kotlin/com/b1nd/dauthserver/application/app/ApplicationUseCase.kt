@@ -60,4 +60,9 @@ class ApplicationUseCase(
             )
         )
     }
+
+    suspend fun getNameByClientId(clientId: String): ResponseData<String> {
+        val application = applicationService.getByClientId(clientId)
+        return ResponseData.ok("클라이언트 이름 조회 성공", application.name)
+    }
 }

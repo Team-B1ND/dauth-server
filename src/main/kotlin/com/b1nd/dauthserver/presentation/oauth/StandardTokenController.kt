@@ -98,4 +98,41 @@ class StandardTokenController(
     @GetMapping("/userinfo", produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun getUserInfo(): StandardUserInfoResponse =
         oAuthUseCase.getStandardUserInfo()
+
+    @Operation(
+        summary = "내부 토큰 발급 (DAuth 전용)",
+        description = """
+            DAuth 내부 시스템 전용 토큰 발급 엔드포인트입니다.
+            client_secret 없이 client_id만으로 토큰을 발급합니다.
+
+            **용도:** DAuth 관리 페이지 등 내부 시스템에서 사용
+
+            **지원하는 grant_type:**
+            - authorization_code: Authorization Code로 토큰 발급
+            - refresh_token: Refresh Token으로 Access Token 재발급
+        """
+    )
+    @PostMapping(
+        "/oauth/token/internal",
+        consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun tokenInternal(
+        @RequestParam("grant_type") grantType: String,
+        @RequestParam(required = false) code: String?,
+        @RequestParam("client_id") clientId: String,
+        @RequestParam("refresh_token", required = false) refreshToken: String?
+    ): StandardTokenResponse {
+        return when (grantType) {
+            "authorization_code" -> {
+                requireNotNull(code) { "code is required for authorization_code grant" }
+                tokenUseCase.issueTokenInternal(code, clientId)
+            }
+            "refresh_token" -> {
+                requireNotNull(refreshToken) { "refresh_token is required for refresh_token grant" }
+                tokenUseCase.refreshTokenInternal(refreshToken, clientId)
+            }
+            else -> throw IllegalArgumentException("Unsupported grant_type: $grantType")
+        }
+    }
 }
