@@ -6,6 +6,7 @@ import com.b1nd.dauthserver.application.token.data.TokenRefreshRequest
 import com.b1nd.dauthserver.application.token.data.TokenRefreshResponse
 import com.b1nd.dauthserver.application.token.data.TokenRequest
 import com.b1nd.dauthserver.application.token.data.TokenResponse
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController
 class TokenController(
     private val useCase: TokenUseCase
 ): TokenDocs {
-    @PostMapping
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     override suspend fun issueToken(@RequestBody request: TokenRequest): ResponseData<TokenResponse> =
         useCase.issueToken(request)
 
-    @PostMapping("/reissue")
+    @PostMapping("/reissue", consumes = [MediaType.APPLICATION_JSON_VALUE])
     override suspend fun reissueToken(@RequestBody request: TokenRefreshRequest): ResponseData<TokenRefreshResponse> =
         useCase.reissueToken(request)
 }
