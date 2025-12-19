@@ -1,7 +1,9 @@
 package com.b1nd.dauthserver.infrastructure.security.support
 
 import com.b1nd.dauthserver.application.support.response.ErrorResponse
+import com.b1nd.dauthserver.application.support.response.OAuth2ErrorResponse
 import com.b1nd.dauthserver.domain.common.exception.BasicException
+import com.b1nd.dauthserver.domain.oauth.exception.OAuth2Exception
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -14,6 +16,11 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
+
+    @ExceptionHandler(OAuth2Exception::class)
+    suspend fun handleOAuth2Exception(exception: OAuth2Exception): ResponseEntity<OAuth2ErrorResponse> =
+        ResponseEntity.status(exception.httpStatus)
+            .body(OAuth2ErrorResponse(exception.error, exception.errorDescription))
     @ExceptionHandler(BasicException::class)
     suspend fun handleBasicException(exception: BasicException): ResponseEntity<ErrorResponse> =
         ResponseEntity.status(exception.statusCode.status)

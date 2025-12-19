@@ -5,6 +5,11 @@ import com.b1nd.dauthserver.application.oauth.data.StandardUserInfoResponse
 import com.b1nd.dauthserver.application.token.TokenUseCase
 import com.b1nd.dauthserver.application.token.data.InternalTokenRequest
 import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
+import com.b1nd.dauthserver.domain.app.exception.ApplicationKeyNotMatchException
+import com.b1nd.dauthserver.domain.app.exception.ApplicationNotFoundException
+import com.b1nd.dauthserver.domain.oauth.exception.OAuth2Exception
+import com.b1nd.dauthserver.domain.user.exception.UserNotFoundException
+import com.b1nd.dauthserver.infrastructure.database.redis.exception.RedisKeyNotFoundException
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -50,22 +55,41 @@ class StandardTokenController(
         @RequestParam("client_id", required = false) clientId: String?,
         @RequestParam("client_secret", required = false) clientSecret: String?,
         @RequestParam("refresh_token", required = false) refreshToken: String?,
+        @RequestParam("code_verifier", required = false) codeVerifier: String?,
         @RequestHeader("Authorization", required = false) authorization: String?
     ): StandardTokenResponse {
-        val (resolvedClientId, resolvedClientSecret) = resolveCredentials(
-            clientId, clientSecret, authorization
-        )
+        try {
+            val (resolvedClientId, resolvedClientSecret) = resolveCredentials(
+                clientId, clientSecret, authorization
+            )
 
-        return when (grantType) {
-            "authorization_code" -> {
-                requireNotNull(code) { "code is required for authorization_code grant" }
-                tokenUseCase.issueTokenStandard(code, resolvedClientId, resolvedClientSecret)
+            return when (grantType) {
+                "authorization_code" -> {
+                    if (code.isNullOrBlank()) {
+                        throw OAuth2Exception.invalidRequest("code is required for authorization_code grant")
+                    }
+                    tokenUseCase.issueTokenStandard(code, resolvedClientId, resolvedClientSecret)
+                }
+                "refresh_token" -> {
+                    if (refreshToken.isNullOrBlank()) {
+                        throw OAuth2Exception.invalidRequest("refresh_token is required for refresh_token grant")
+                    }
+                    tokenUseCase.refreshTokenStandard(refreshToken, resolvedClientId, resolvedClientSecret)
+                }
+                else -> throw OAuth2Exception.unsupportedGrantType("Unsupported grant_type: $grantType")
             }
-            "refresh_token" -> {
-                requireNotNull(refreshToken) { "refresh_token is required for refresh_token grant" }
-                tokenUseCase.refreshTokenStandard(refreshToken, resolvedClientId, resolvedClientSecret)
-            }
-            else -> throw IllegalArgumentException("Unsupported grant_type: $grantType")
+        } catch (e: OAuth2Exception) {
+            throw e
+        } catch (e: ApplicationNotFoundException) {
+            throw OAuth2Exception.invalidClient("Invalid client_id")
+        } catch (e: ApplicationKeyNotMatchException) {
+            throw OAuth2Exception.invalidClient("Invalid client credentials")
+        } catch (e: UserNotFoundException) {
+            throw OAuth2Exception.invalidGrant("User not found")
+        } catch (e: RedisKeyNotFoundException) {
+            throw OAuth2Exception.invalidGrant("Invalid or expired authorization code")
+        } catch (e: Exception) {
+            throw OAuth2Exception.serverError(e.message)
         }
     }
 
@@ -86,7 +110,7 @@ class StandardTokenController(
             }
         }
 
-        throw IllegalArgumentException("Client credentials are required")
+        throw OAuth2Exception.invalidClient("Client credentials are required")
     }
 
     @Operation(

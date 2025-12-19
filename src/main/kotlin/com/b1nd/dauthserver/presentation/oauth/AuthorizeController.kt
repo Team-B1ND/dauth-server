@@ -34,6 +34,8 @@ class AuthorizeController(
         @Parameter(description = "응답 타입 (code)") @RequestParam("response_type") responseType: String,
         @Parameter(description = "요청 스코프") @RequestParam(required = false) scope: String?,
         @Parameter(description = "상태값 (CSRF 방지)") @RequestParam(required = false) state: String?,
+        @Parameter(description = "PKCE code_challenge (호환성용, 검증하지 않음)") @RequestParam("code_challenge", required = false) codeChallenge: String?,
+        @Parameter(description = "PKCE code_challenge_method (호환성용, 검증하지 않음)") @RequestParam("code_challenge_method", required = false) codeChallengeMethod: String?,
         response: ServerHttpResponse
     ) {
         val encodedRedirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
