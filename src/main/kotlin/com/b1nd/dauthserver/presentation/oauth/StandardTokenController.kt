@@ -3,6 +3,7 @@ package com.b1nd.dauthserver.presentation.oauth
 import com.b1nd.dauthserver.application.oauth.OAuthUseCase
 import com.b1nd.dauthserver.application.oauth.data.StandardUserInfoResponse
 import com.b1nd.dauthserver.application.token.TokenUseCase
+import com.b1nd.dauthserver.application.token.data.InternalTokenRequest
 import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -112,27 +114,20 @@ class StandardTokenController(
             - refresh_token: Refresh Token으로 Access Token 재발급
         """
     )
-    @PostMapping(
-        "/oauth/token/internal",
-        consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
+    @PostMapping("/oauth/token/internal")
     suspend fun tokenInternal(
-        @RequestParam("grant_type") grantType: String,
-        @RequestParam(required = false) code: String?,
-        @RequestParam("client_id") clientId: String,
-        @RequestParam("refresh_token", required = false) refreshToken: String?
+        @RequestBody request: InternalTokenRequest
     ): StandardTokenResponse {
-        return when (grantType) {
+        return when (request.grantType) {
             "authorization_code" -> {
-                requireNotNull(code) { "code is required for authorization_code grant" }
-                tokenUseCase.issueTokenInternal(code, clientId)
+                requireNotNull(request.code) { "code is required for authorization_code grant" }
+                tokenUseCase.issueTokenInternal(request.code, request.clientId)
             }
             "refresh_token" -> {
-                requireNotNull(refreshToken) { "refresh_token is required for refresh_token grant" }
-                tokenUseCase.refreshTokenInternal(refreshToken, clientId)
+                requireNotNull(request.refreshToken) { "refresh_token is required for refresh_token grant" }
+                tokenUseCase.refreshTokenInternal(request.refreshToken, request.clientId)
             }
-            else -> throw IllegalArgumentException("Unsupported grant_type: $grantType")
+            else -> throw IllegalArgumentException("Unsupported grant_type: ${request.grantType}")
         }
     }
 }
