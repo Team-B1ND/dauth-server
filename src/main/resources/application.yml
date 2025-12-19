@@ -27,6 +27,8 @@ app:
     endpoint: ${DODAM_ENDPOINT}
   token:
     key: ${TOKEN_KEY}
+  internal:
+    client-id: ${INTERNAL_CLIENT_ID}
 
 # Swagger
 swagger:

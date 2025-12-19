@@ -51,6 +51,7 @@ class SecurityConfig(
                 .pathMatchers("/.well-known/**").permitAll()
                 .pathMatchers(HttpMethod.GET, "/oauth/authorize").permitAll()
                 .pathMatchers(HttpMethod.POST, "/oauth/token").permitAll()
+                .pathMatchers(HttpMethod.POST, "/oauth/token/internal").permitAll()
                 .pathMatchers(HttpMethod.POST, "/oauth/token/**").permitAll()
                 .pathMatchers(HttpMethod.GET, "/oauth/jwks").permitAll()
                 .pathMatchers(HttpMethod.GET, "/app").permitAll()
