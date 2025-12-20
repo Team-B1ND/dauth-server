@@ -43,6 +43,7 @@ class ApplicationService(
         application.updateInfo(name, url, description, redirectUrl, isPublic, scopes)
         applicationRepository.save(application)
         frameworks?.let {
+            applicationFrameworkRepository.deleteByApplicationId(application.id!!)
             saveFrameworks(frameworks.map {
                 ApplicationFrameworkEntity(applicationId = application.id!!, frameworkId = it.id!!)
             })
