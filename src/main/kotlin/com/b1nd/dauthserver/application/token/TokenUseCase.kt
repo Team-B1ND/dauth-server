@@ -1,10 +1,5 @@
 package com.b1nd.dauthserver.application.token
 
-import com.b1nd.dauthserver.application.support.response.ResponseData
-import com.b1nd.dauthserver.application.token.data.TokenRefreshRequest
-import com.b1nd.dauthserver.application.token.data.TokenRefreshResponse
-import com.b1nd.dauthserver.application.token.data.TokenRequest
-import com.b1nd.dauthserver.application.token.data.TokenResponse
 import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
 import com.b1nd.dauthserver.domain.app.service.ApplicationService
 import com.b1nd.dauthserver.domain.user.exception.UserNotFoundException
@@ -25,21 +20,7 @@ class TokenUseCase(
     private val applicationService: ApplicationService,
     private val internalProperties: InternalProperties
 ) {
-    suspend fun issueToken(request: TokenRequest): ResponseData<TokenResponse> {
-        val userId = redisService.get(RedisKeyType.LOGIN_TOKEN, request.code.toString())
-        val user = userService.getById(userId.toLong()) ?: throw UserNotFoundException()
-        val application = applicationService.getByClientIdAndSecret(user.client, request.clientSecret)
-        val accessToken = tokenProvider.generateAccessToken(user.dodamId, application.clientId)
-        val refreshToken = tokenProvider.generateRefreshToken(user.dodamId, application.clientId)
-        val idToken = tokenProvider.generateIdToken(application.clientId, user.role, application.url, user.dodamId, application.clientSecret)
-        redisService.delete(RedisKeyType.LOGIN_TOKEN, request.code.toString())
-        return ResponseData.ok("토큰 발급 성공", TokenResponse(accessToken, refreshToken, idToken))
-    }
-
-    suspend fun reissueToken(request: TokenRefreshRequest): ResponseData<TokenRefreshResponse> =
-        ResponseData.ok("토큰 재발급 성공", TokenRefreshResponse(tokenProvider.reissueAccessToken(request.refresh)))
-
-    suspend fun issueTokenStandard(code: String, clientId: String, clientSecret: String): StandardTokenResponse {
+    suspend fun issueToken(code: String, clientId: String, clientSecret: String): StandardTokenResponse {
         val userId = redisService.get(RedisKeyType.LOGIN_TOKEN, code)
         val user = userService.getById(userId.toLong()) ?: throw UserNotFoundException()
         val application = applicationService.getByClientIdAndSecret(clientId, clientSecret)
@@ -56,7 +37,7 @@ class TokenUseCase(
         )
     }
 
-    suspend fun refreshTokenStandard(refreshToken: String, clientId: String, clientSecret: String): StandardTokenResponse {
+    suspend fun refreshToken(refreshToken: String, clientId: String, clientSecret: String): StandardTokenResponse {
         applicationService.getByClientIdAndSecret(clientId, clientSecret)
         val newAccessToken = tokenProvider.reissueAccessToken(refreshToken)
         return StandardTokenResponse(

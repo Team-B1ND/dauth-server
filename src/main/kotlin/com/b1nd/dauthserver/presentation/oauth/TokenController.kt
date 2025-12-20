@@ -22,17 +22,16 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.Base64
 
-@Tag(name = "OAuth (Standard)", description = "표준 OAuth 2.0 엔드포인트 (Spring Security OAuth2 Client 호환)")
+@Tag(name = "OAuth Token", description = "OAuth 2.0 토큰 엔드포인트")
 @RestController
-class StandardTokenController(
+class TokenController(
     private val tokenUseCase: TokenUseCase,
     private val oAuthUseCase: OAuthUseCase
 ) {
     @Operation(
-        summary = "토큰 발급 (표준 형식)",
+        summary = "토큰 발급",
         description = """
-            표준 OAuth 2.0 토큰 엔드포인트입니다.
-            Spring Security OAuth2 Client가 자동으로 호출합니다.
+            OAuth 2.0 토큰 엔드포인트 (RFC 6749)
 
             **지원하는 grant_type:**
             - authorization_code: Authorization Code로 토큰 발급
@@ -68,13 +67,13 @@ class StandardTokenController(
                     if (code.isNullOrBlank()) {
                         throw OAuth2Exception.invalidRequest("code is required for authorization_code grant")
                     }
-                    tokenUseCase.issueTokenStandard(code, resolvedClientId, resolvedClientSecret)
+                    tokenUseCase.issueToken(code, resolvedClientId, resolvedClientSecret)
                 }
                 "refresh_token" -> {
                     if (refreshToken.isNullOrBlank()) {
                         throw OAuth2Exception.invalidRequest("refresh_token is required for refresh_token grant")
                     }
-                    tokenUseCase.refreshTokenStandard(refreshToken, resolvedClientId, resolvedClientSecret)
+                    tokenUseCase.refreshToken(refreshToken, resolvedClientId, resolvedClientSecret)
                 }
                 else -> throw OAuth2Exception.unsupportedGrantType("Unsupported grant_type: $grantType")
             }
@@ -114,11 +113,8 @@ class StandardTokenController(
     }
 
     @Operation(
-        summary = "사용자 정보 조회 (표준 형식)",
-        description = """
-            표준 OAuth 2.0 userinfo 엔드포인트입니다.
-            Spring Security OAuth2 Client가 자동으로 호출합니다.
-        """,
+        summary = "사용자 정보 조회",
+        description = "OAuth 2.0 UserInfo 엔드포인트 (OpenID Connect)",
         security = [SecurityRequirement(name = "bearerAuth")]
     )
     @GetMapping("/userinfo", produces = [MediaType.APPLICATION_JSON_VALUE])
