@@ -9,10 +9,30 @@ data class MemberResponse(
     val role: RoleType,
     val status: ActiveStatus,
     val profileImage: String? = null,
-    val phone: String
+    val phone: String,
+    val student: StudentResponse? = null,
+    val teacher: TeacherResponse? = null
 ) {
     enum class ActiveStatus{
         ACTIVE,
         DEACTIVATE
     }
 }
+
+data class TeacherResponse(
+    val tel: String,
+    val position: String
+)
+
+data class StudentResponse(
+    val id: Int,
+    val grade: Int,
+    val room: Int,
+    val number: Int,
+    val code: String
+)
+
+data class ClubResponse(
+    val name: String,
+    val type: String
+)

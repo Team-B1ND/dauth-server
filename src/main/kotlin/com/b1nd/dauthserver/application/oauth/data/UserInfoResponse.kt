@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.application.oauth.data
 
 import com.b1nd.dauthserver.domain.user.enumeration.ScopeType
+import com.b1nd.dauthserver.infrastructure.client.dodam.data.ClubResponse
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.MemberResponse
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.swagger.v3.oas.annotations.media.Schema
@@ -24,13 +25,25 @@ data class UserInfoResponse(
     val role: String? = null,
 
     @Schema(description = "전화번호 (phone scope 필요)", example = "010-1234-5678")
-    val phone: String? = null
+    val phone: String? = null,
+
+    @Schema(description = "학년 (read:profile scope 필요)", example = "1")
+    val grade: Int? = null,
+
+    @Schema(description = "반 (read:profile scope 필요)", example = "2")
+    val room: Int? = null,
+
+    @Schema(description = "번호 (read:profile scope 필요)", example = "8")
+    val number: Int? = null,
+
+    val clubs: List<ClubResponse>? = null
 ) {
     companion object {
-        fun of(member: MemberResponse, scopes: List<ScopeType>): UserInfoResponse {
+        fun of(member: MemberResponse, clubInfo: List<ClubResponse>, scopes: List<ScopeType>): UserInfoResponse {
             val hasOpenId = scopes.contains(ScopeType.OPENID)
             val hasProfile = scopes.contains(ScopeType.READ_PROFILE)
             val hasPhone = scopes.contains(ScopeType.PHONE)
+            val hasClub = scopes.contains(ScopeType.READ_CLUB)
 
             return UserInfoResponse(
                 sub = member.id,
@@ -38,7 +51,11 @@ data class UserInfoResponse(
                 email = if (hasProfile) member.email else null,
                 profileImage = if (hasProfile) member.profileImage else null,
                 role = if (hasProfile) member.role.name else null,
-                phone = if (hasPhone) member.phone else null
+                phone = if (hasPhone) member.phone else null,
+                grade = if (hasProfile && member.student != null) member.student.grade else null,
+                room = if (hasProfile && member.student != null) member.student.room else null,
+                number = if (hasProfile && member.student != null) member.student.number else null,
+                clubs = if (hasClub) clubInfo else null
             )
         }
     }

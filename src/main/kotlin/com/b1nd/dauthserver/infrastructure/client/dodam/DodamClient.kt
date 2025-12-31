@@ -1,5 +1,6 @@
 package com.b1nd.dauthserver.infrastructure.client.dodam
 
+import com.b1nd.dauthserver.infrastructure.client.dodam.data.ClubResponse
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamLoginRequest
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamLoginResponse
 import com.b1nd.dauthserver.infrastructure.client.dodam.data.DodamReissueResponse
@@ -48,4 +49,14 @@ class DodamClient(
                 throw DodamClientException(response.statusCode().value())
             }
             .awaitBody<BasicApiResponse<MemberResponse>>().data
+
+    suspend fun dodamMyClub(access: String): List<ClubResponse> =
+        webClient.get()
+            .uri(properties.endpoint+"/clubs/joined")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $access")
+            .retrieve()
+            .onStatus(HttpStatusCode::isError) { response: ClientResponse ->
+                throw DodamClientException(response.statusCode().value())
+            }
+            .awaitBody<BasicApiResponse<List<ClubResponse>>>().data
 }

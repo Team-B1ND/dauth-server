@@ -18,7 +18,8 @@ class OAuthUseCase(
         val user = holder.current()
         val accessToken = dodamClient.reissueAccessToken(user.refreshToken)
         val memberInfo = dodamClient.dodamMy(accessToken)
-        return ResponseData.ok("사용자 정보 조회 성공", UserInfoResponse.of(memberInfo, user.scopes))
+        val memberClubInfo = dodamClient.dodamMyClub(accessToken)
+        return ResponseData.ok("사용자 정보 조회 성공", UserInfoResponse.of(memberInfo, memberClubInfo, user.scopes))
     }
 
     suspend fun getStandardUserInfo(): StandardUserInfoResponse {
