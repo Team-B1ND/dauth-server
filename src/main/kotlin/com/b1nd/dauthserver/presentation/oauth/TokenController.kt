@@ -2,6 +2,7 @@ package com.b1nd.dauthserver.presentation.oauth
 
 import com.b1nd.dauthserver.application.oauth.OAuthUseCase
 import com.b1nd.dauthserver.application.oauth.data.StandardUserInfoResponse
+import com.b1nd.dauthserver.application.oauth.data.UserInfoResponse
 import com.b1nd.dauthserver.application.token.TokenUseCase
 import com.b1nd.dauthserver.application.token.data.InternalTokenRequest
 import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
@@ -50,7 +51,7 @@ class TokenController(
     }
 
     @GetMapping("/userinfo", produces = [MediaType.APPLICATION_JSON_VALUE])
-    override suspend fun getUserInfo(): StandardUserInfoResponse =
+    override suspend fun getUserInfo(): UserInfoResponse =
         oAuthUseCase.getStandardUserInfo()
 
     @PostMapping("/oauth/token/internal")

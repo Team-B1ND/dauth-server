@@ -1,6 +1,7 @@
 package com.b1nd.dauthserver.presentation.oauth
 
 import com.b1nd.dauthserver.application.oauth.data.StandardUserInfoResponse
+import com.b1nd.dauthserver.application.oauth.data.UserInfoResponse
 import com.b1nd.dauthserver.application.token.data.InternalTokenRequest
 import com.b1nd.dauthserver.application.token.data.StandardTokenResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -57,7 +58,7 @@ interface TokenDocs {
         description = "OAuth 2.0 UserInfo 엔드포인트 (OpenID Connect)",
         security = [SecurityRequirement(name = "bearerAuth")]
     )
-    suspend fun getUserInfo(): StandardUserInfoResponse
+    suspend fun getUserInfo(): UserInfoResponse
 
     @Operation(
         summary = "내부 토큰 발급 (DAuth 전용)",
