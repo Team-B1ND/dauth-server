@@ -39,7 +39,7 @@ data class UserInfoResponse(
     val clubs: List<ClubResponse>? = null
 ) {
     companion object {
-        fun of(member: MemberResponse, clubInfo: List<ClubResponse>, scopes: List<ScopeType>): UserInfoResponse {
+        fun of(member: MemberResponse, clubInfo: List<ClubResponse>?, scopes: List<ScopeType>): UserInfoResponse {
             val hasOpenId = scopes.contains(ScopeType.OPENID)
             val hasProfile = scopes.contains(ScopeType.READ_PROFILE)
             val hasPhone = scopes.contains(ScopeType.PHONE)
